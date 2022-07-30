@@ -67,7 +67,7 @@ export const Routers: ChainIdToAddressMap = {
     "0x5aa9ca240174a54af6d9bfc69214b2ed948de86d": "reservoir.tools",
     "0x7c9733b19e14f37aca367fbd78922c098c55c874": "reservoir.tools",
     "0x8005488ff4f8982d2d8c1d602e6d747b1428dd41": "reservoir.tools",
-    "0x9ebfb53fa8526906738856848a27cb11b0285c3f": "reservoir.tools",
+    "0x11c91606fc27a55c6f0e8f847d2ac46ec45b6e21": "reservoir.tools",
     // X2Y2
     "0x56dd5bbede9bfdb10a2845c4d70d4a2950163044": "x2y2.io",
   },
