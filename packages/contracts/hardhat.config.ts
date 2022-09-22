@@ -31,6 +31,10 @@ const config: HardhatUserConfig = {
         url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_KEY}`,
         blockNumber: Number(process.env.BLOCK_NUMBER),
       },
+      accounts: {
+        mnemonic:
+          "void forward involve old phone resource sentence fall friend wait strike copper urge reduce chapter",
+      },
     },
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -61,7 +65,7 @@ const config: HardhatUserConfig = {
     project: String(process.env.TENDERLY_PROJECT),
   },
   mocha: {
-    timeout: 60000,
+    timeout: 60000 * 10,
   },
 };
 

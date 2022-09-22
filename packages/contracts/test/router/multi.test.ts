@@ -94,6 +94,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId1.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -123,6 +124,7 @@ describe("Router - multi buy", () => {
         signer: seller2.address,
         collection: erc721.address,
         tokenId: tokenId2,
+        currency: Sdk.Common.Addresses.Weth[chainId],
         price: price2,
         startTime: await getCurrentTimestamp(ethers.provider),
         endTime: (await getCurrentTimestamp(ethers.provider)) + 60,
@@ -138,6 +140,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId2.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -174,6 +177,7 @@ describe("Router - multi buy", () => {
             amount: fee3,
           },
         ],
+        paymentToken: Sdk.ZeroExV4.Addresses.Eth[chainId],
         price: price3,
         expiry: (await getCurrentTimestamp(ethers.provider)) + 60,
       });
@@ -188,6 +192,7 @@ describe("Router - multi buy", () => {
         tokenId: tokenId3.toString(),
         amount: amount3,
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -300,6 +305,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId1.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
 
       sellOrders.push({
@@ -308,6 +314,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId1.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -402,6 +409,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId1.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -449,6 +457,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId2.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -496,6 +505,7 @@ describe("Router - multi buy", () => {
         contract: erc721.address,
         tokenId: tokenId3.toString(),
         order: sellOrder,
+        currency: Sdk.Common.Addresses.Eth[chainId],
       });
     }
 
@@ -515,7 +525,7 @@ describe("Router - multi buy", () => {
     const tx = await router.fillListingsTx(sellOrders, buyer.address, {
       referrer: "reservoir.market",
     });
-    await buyer.sendTransaction({ ...tx, gasLimit: 1000000 });
+    await buyer.sendTransaction(tx);
 
     const seller1EthBalanceAfter = await seller1.getBalance();
     const seller2EthBalanceAfter = await seller2.getBalance();

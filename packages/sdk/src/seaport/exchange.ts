@@ -10,6 +10,7 @@ import { keccak256 } from "@ethersproject/solidity";
 
 import * as Addresses from "./addresses";
 import { BaseOrderInfo } from "./builders/base";
+import { BundleAskOrderInfo } from "./builders/bundles/bundle-ask";
 import { BundleOrder } from "./bundle-order";
 import { Order } from "./order";
 import * as Types from "./types";
@@ -85,8 +86,11 @@ export class Exchange {
 
       if (info.side === "sell") {
         if (
+          // Order is not private
           recipient === AddressZero &&
-          (!matchParams.amount || bn(matchParams.amount).eq(1)) &&
+          // Order is single quantity
+          info.amount === "1" &&
+          // Order has no criteria
           !matchParams.criteriaResolvers
         ) {
           info = info as BaseOrderInfo;
@@ -108,8 +112,12 @@ export class Exchange {
                   offerAmount: info.amount,
                   basicOrderType:
                     (info.tokenKind === "erc721"
-                      ? Types.BasicOrderType.ETH_TO_ERC721_FULL_OPEN
-                      : Types.BasicOrderType.ETH_TO_ERC1155_FULL_OPEN) +
+                      ? info.paymentToken === CommonAddresses.Eth[this.chainId]
+                        ? Types.BasicOrderType.ETH_TO_ERC721_FULL_OPEN
+                        : Types.BasicOrderType.ERC20_TO_ERC721_FULL_OPEN
+                      : info.paymentToken === CommonAddresses.Eth[this.chainId]
+                      ? Types.BasicOrderType.ETH_TO_ERC1155_FULL_OPEN
+                      : Types.BasicOrderType.ERC20_TO_ERC1155_FULL_OPEN) +
                     order.params.orderType,
                   startTime: order.params.startTime,
                   endTime: order.params.endTime,
@@ -131,7 +139,13 @@ export class Exchange {
                   signature: order.params.signature!,
                 },
               ]) + generateReferrerBytes(options?.referrer),
-            value: bn(order.getMatchingPrice()).toHexString(),
+            value:
+              info.paymentToken === CommonAddresses.Eth[this.chainId]
+                ? bn(order.getMatchingPrice())
+                    .mul(matchParams.amount || "1")
+                    .div(info.amount)
+                    .toHexString()
+                : undefined,
           };
         } else {
           // Use "advanced" fullfillment
@@ -158,16 +172,22 @@ export class Exchange {
                   recipient,
                 ]
               ) + generateReferrerBytes(options?.referrer),
-            value: bn(order.getMatchingPrice())
-              .mul(matchParams.amount || "1")
-              .div(info.amount)
-              .toHexString(),
+            value:
+              info.paymentToken === CommonAddresses.Eth[this.chainId]
+                ? bn(order.getMatchingPrice())
+                    .mul(matchParams.amount || "1")
+                    .div(info.amount)
+                    .toHexString()
+                : undefined,
           };
         }
       } else {
         if (
+          // Order is not private
           recipient === AddressZero &&
-          (!matchParams.amount || bn(matchParams.amount).eq(1)) &&
+          // Order is single quantity
+          info.amount === "1" &&
+          // Order has no criteria
           !matchParams.criteriaResolvers
         ) {
           info = info as BaseOrderInfo;
@@ -245,6 +265,11 @@ export class Exchange {
       // Fill bundle orders
       order = order as BundleOrder;
 
+      let info = order.getInfo();
+      if (!info) {
+        throw new Error("Could not get order info");
+      }
+
       if (order.params.kind === "bundle-ask") {
         return {
           from: taker,
@@ -266,9 +291,13 @@ export class Exchange {
               conduitKey,
               recipient,
             ]) + generateReferrerBytes(options?.referrer),
-          value: bn(order.getMatchingPrice())
-            .mul(matchParams.amount || "1")
-            .toHexString(),
+          value:
+            (info as BundleAskOrderInfo).paymentToken ===
+            CommonAddresses.Eth[this.chainId]
+              ? bn(order.getMatchingPrice())
+                  .mul(matchParams.amount || "1")
+                  .toHexString()
+              : undefined,
         };
       } else {
         throw new Error("Unsupported order kind");
@@ -372,7 +401,11 @@ export class Exchange {
               info.paymentToken === CommonAddresses.Eth[this.chainId]
             );
           })
-          .map((order) => order.getMatchingPrice())
+          .map((order, i) =>
+            bn(order.getMatchingPrice())
+              .mul(matchParams[i].amount || "1")
+              .div(order.getInfo()!.amount)
+          )
           .reduce((a, b) => bn(a).add(b), bn(0))
       ).toHexString(),
     };
@@ -493,6 +526,7 @@ export class Exchange {
               .map((c) => bn(c.amount))
               .reduce((a, b) => a.add(b))
               .toString(),
+            side: "sell",
           };
         } else {
           // Bid got filled
@@ -518,6 +552,7 @@ export class Exchange {
             amount: mainConsideration.amount,
             paymentToken: nSpentItems[0].token,
             price: nSpentItems[0].amount,
+            side: "buy",
           };
         }
       }
