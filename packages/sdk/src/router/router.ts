@@ -481,6 +481,19 @@ export class Router {
         exchangeKind: ExchangeKind.SEAPORT,
         maker: order.params.offerer,
       };
+    } else if (kind === "sudoswap") {
+      order = order as Sdk.Sudoswap.Order;
+      const orderData = JSON.parse(order.params.pair);
+      const exchange = new Sdk.Sudoswap.Exchange(this.chainId);
+      return {
+        tx: exchange.fillOrderTx(
+          this.contract.address,
+          orderData.swapList,
+          order.params.price
+        ),
+        exchangeKind: ExchangeKind.SUDOSWAP,
+        maker: "0x2b2e8cda09bba9660dca5cb6233787738ad68329",
+      };
     }
 
     throw new Error("Unreachable");
