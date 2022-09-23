@@ -488,7 +488,7 @@ export class Router {
       return {
         tx: exchange.fillOrderTx(
           this.contract.address,
-          orderData.swapList,
+          orderData.swaplist,
           order.params.price
         ),
         exchangeKind: ExchangeKind.SUDOSWAP,
