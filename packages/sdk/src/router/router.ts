@@ -487,7 +487,7 @@ export class Router {
       const exchange = new Sdk.Sudoswap.Exchange(this.chainId);
       return {
         tx: exchange.fillOrderTx(
-          this.contract.address,
+          taker,
           orderData.swaplist,
           order.params.price
         ),
