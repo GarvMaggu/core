@@ -40,6 +40,16 @@
         "internalType": "address",
         "name": "seaportAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "sudoSwapAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "blurAddress",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -97,6 +107,29 @@
   {
     "inputs": [
       {
+        "internalType": "bytes[]",
+        "name": "data",
+        "type": "bytes[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "values",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "bool",
+        "name": "revertIfIncomplete",
+        "type": "bool"
+      }
+    ],
+    "name": "batchBuyWithETH",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes",
         "name": "data",
         "type": "bytes"
@@ -132,7 +165,7 @@
         "type": "uint16"
       }
     ],
-    "name": "batchERC1155ListingFill",
+    "name": "batchhERC1155ListingFill",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -170,9 +203,22 @@
         "type": "uint16"
       }
     ],
-    "name": "batchERC721ListingFill",
+    "name": "batchhERC721ListingFill",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "blur",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -246,29 +292,6 @@
       }
     ],
     "name": "makeCalls",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes[]",
-        "name": "data",
-        "type": "bytes[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "values",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "revertIfIncomplete",
-        "type": "bool"
-      }
-    ],
-    "name": "multiListingFill",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -407,7 +430,7 @@
         "type": "bool"
       }
     ],
-    "name": "singleERC1155BidFill",
+    "name": "singERC1155BidFill",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -455,7 +478,7 @@
         "type": "uint16"
       }
     ],
-    "name": "singleERC1155ListingFill",
+    "name": "singERC1155ListingFill",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -508,7 +531,7 @@
         "type": "uint16"
       }
     ],
-    "name": "singleERC1155ListingFillWithPrecheck",
+    "name": "singERC1155ListingFillWithPrecheck",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -541,7 +564,7 @@
         "type": "bool"
       }
     ],
-    "name": "singleERC721BidFill",
+    "name": "singERC721BidFill",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -584,7 +607,7 @@
         "type": "uint16"
       }
     ],
-    "name": "singleERC721ListingFill",
+    "name": "singERC721ListingFill",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -632,9 +655,22 @@
         "type": "uint16"
       }
     ],
-    "name": "singleERC721ListingFillWithPrecheck",
+    "name": "singERC721ListingFillWithPrecheck",
     "outputs": [],
     "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "sudoSwap",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {

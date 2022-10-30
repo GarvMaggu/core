@@ -149,7 +149,7 @@ export class Router {
         from: taker,
         to: this.contract.address,
         data: this.contract.interface.encodeFunctionData(
-          "batchERC721ListingFill",
+          "batchhERC721ListingFill",
           [
             tx.data,
             zeroexV4Erc721Details.map((detail) => detail.contract),
@@ -188,7 +188,7 @@ export class Router {
         from: taker,
         to: this.contract.address,
         data: this.contract.interface.encodeFunctionData(
-          "batchERC1155ListingFill",
+          "batchhERC1155ListingFill",
           [
             tx.data,
             zeroexV4Erc1155Details.map((detail) => detail.contract),
@@ -223,7 +223,7 @@ export class Router {
           data:
             !options?.skipPrecheck && !isEscrowed
               ? this.contract.interface.encodeFunctionData(
-                  "singleERC721ListingFillWithPrecheck",
+                  "singERC721ListingFillWithPrecheck",
                   [
                     tx.data,
                     exchangeKind,
@@ -236,7 +236,7 @@ export class Router {
                   ]
                 )
               : this.contract.interface.encodeFunctionData(
-                  "singleERC721ListingFill",
+                  "singERC721ListingFill",
                   [
                     tx.data,
                     exchangeKind,
@@ -259,7 +259,7 @@ export class Router {
           data:
             !options?.skipPrecheck && !isEscrowed
               ? this.contract.interface.encodeFunctionData(
-                  "singleERC1155ListingFillWithPrecheck",
+                  "singERC1155ListingFillWithPrecheck",
                   [
                     tx.data,
                     exchangeKind,
@@ -273,7 +273,7 @@ export class Router {
                   ]
                 )
               : this.contract.interface.encodeFunctionData(
-                  "singleERC1155ListingFill",
+                  "singERC1155ListingFill",
                   [
                     tx.data,
                     exchangeKind,
@@ -303,7 +303,7 @@ export class Router {
         from: taker,
         to: this.contract.address,
         data:
-          this.contract.interface.encodeFunctionData("multiListingFill", [
+          this.contract.interface.encodeFunctionData("batchBuyWithETH", [
             routerTxs.map((tx) => tx.data),
             routerTxs.map((tx) => tx.value!.toString()),
             !options?.partial,
@@ -364,7 +364,7 @@ export class Router {
               this.contract.address,
               detail.tokenId,
               this.contract.interface.encodeFunctionData(
-                "singleERC721BidFill",
+                "singERC721BidFill",
                 [tx.data, exchangeKind, detail.contract, taker, true]
               ),
             ]
@@ -384,7 +384,7 @@ export class Router {
               // TODO: Support selling a quantity greater than 1
               1,
               this.contract.interface.encodeFunctionData(
-                "singleERC1155BidFill",
+                "singERC1155BidFill",
                 [tx.data, exchangeKind, detail.contract, taker, true]
               ),
             ]
@@ -486,13 +486,22 @@ export class Router {
       const orderData = JSON.parse(order.params.pair);
       const exchange = new Sdk.Sudoswap.Exchange(this.chainId);
       return {
-        tx: exchange.fillOrderTx(
-          taker,
-          orderData.swaplist,
-          order.params.price
-        ),
+        tx: exchange.fillOrderTx(taker, orderData.swaplist, order.params.price),
         exchangeKind: ExchangeKind.SUDOSWAP,
         maker: "0x2b2e8cda09bba9660dca5cb6233787738ad68329",
+      };
+    } else if (kind === "blur") {
+      order = order as Sdk.Blur.Order;
+      const exchange = new Sdk.Blur.Exchange(this.chainId);
+      return {
+        tx: exchange.fillOrderTx(
+          this.contract.address,
+          order.params.sell,
+          order.params.buy,
+          order.params.price
+        ),
+        exchangeKind: ExchangeKind.BLUR,
+        maker: order.params.maker,
       };
     }
 

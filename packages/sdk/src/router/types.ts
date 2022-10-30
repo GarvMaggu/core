@@ -8,6 +8,7 @@ export enum ExchangeKind {
   X2Y2,
   SEAPORT,
   SUDOSWAP,
+  BLUR
 }
 
 export type GenericOrder =
@@ -38,6 +39,10 @@ export type GenericOrder =
   | {
       kind: "sudoswap";
       order: Sdk.Sudoswap.Order;
+    }
+  | {
+      kind: "blur";
+      order: Sdk.Blur.Order;
     };
 
 export type ListingFillDetails = {
