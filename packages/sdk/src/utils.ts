@@ -46,6 +46,18 @@ export const generateReferrerBytes = (referrer?: string) => {
     : "";
 };
 
+export const generateSourceBytes = (source?: string) => {
+  if (source && !isPrintableASCII(source)) {
+    throw new Error("Not a printable ASCII string");
+  }
+
+  return source
+    ? `${SEPARATOR}${Buffer.from(toUtf8Bytes(source)).toString(
+        "hex"
+      )}${SEPARATOR}`
+    : "";
+};
+
 export const getReferrer = (calldata: string) => {
   try {
     if (calldata.endsWith(SEPARATOR)) {

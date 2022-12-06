@@ -42,6 +42,20 @@ export class Router {
       directFillingData?: any;
     }
   ): Promise<TxData> {
+    if (details.some(({ kind }) => kind === "rarible")) {
+      if (details.length > 1) {
+        throw new Error("Rarible sweeping is not supported");
+      } else {
+        const order = details[0].order as Sdk.Rarible.Order;
+        const exchange = new Sdk.Rarible.Exchange(this.chainId);
+        return exchange.fillOrderTx(taker, order, {
+          tokenId: details[0].tokenId,
+          assetClass: details[0].contractKind.toUpperCase(),
+          amount: Number(details[0].amount),
+        });
+      }
+    }
+
     // Assume the listing details are consistent with the underlying order object
 
     // Orders on exchanges that support batch filling will be batch filled
@@ -363,10 +377,13 @@ export class Router {
               taker,
               this.contract.address,
               detail.tokenId,
-              this.contract.interface.encodeFunctionData(
-                "singERC721BidFill",
-                [tx.data, exchangeKind, detail.contract, taker, true]
-              ),
+              this.contract.interface.encodeFunctionData("singERC721BidFill", [
+                tx.data,
+                exchangeKind,
+                detail.contract,
+                taker,
+                true,
+              ]),
             ]
           ) + generateReferrerBytes(options?.referrer),
       };
@@ -383,10 +400,13 @@ export class Router {
               detail.tokenId,
               // TODO: Support selling a quantity greater than 1
               1,
-              this.contract.interface.encodeFunctionData(
-                "singERC1155BidFill",
-                [tx.data, exchangeKind, detail.contract, taker, true]
-              ),
+              this.contract.interface.encodeFunctionData("singERC1155BidFill", [
+                tx.data,
+                exchangeKind,
+                detail.contract,
+                taker,
+                true,
+              ]),
             ]
           ) + generateReferrerBytes(options?.referrer),
       };
@@ -404,7 +424,7 @@ export class Router {
   }
 
   private async generateNativeListingFillTx(
-    { kind, order, tokenId, amount }: ListingDetails,
+    { kind, order, tokenId, amount, contractKind = "erc721" }: ListingDetails,
     taker: string
   ): Promise<{
     tx: TxData;
@@ -500,6 +520,19 @@ export class Router {
           order.params.buy,
           order.params.price
         ),
+        exchangeKind: ExchangeKind.BLUR,
+        maker: order.params.maker,
+      };
+    } else if (kind === "rarible") {
+      order = order as Sdk.Rarible.Order;
+
+      const exchange = new Sdk.Rarible.Exchange(this.chainId);
+      return {
+        tx: await exchange.fillOrderTx(taker, order, {
+          assetClass: contractKind,
+          tokenId,
+          amount: Number(amount) ?? 1,
+        }),
         exchangeKind: ExchangeKind.BLUR,
         maker: order.params.maker,
       };
