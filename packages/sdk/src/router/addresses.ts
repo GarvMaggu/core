@@ -1,7 +1,7 @@
 import { ChainIdToAddress, ChainIdToAddressList, Network } from "../utils";
 
 export const Router: ChainIdToAddress = {
-  [Network.Ethereum]: "0x552b16d19dbad7af2786fe5a40d96d2a5c09428c", // V5_0_0
+  [Network.Ethereum]: "0x114e54a100a0415abf9727234c92c83dbcc59abf", // V5_0_0
   [Network.EthereumGoerli]: "0x4e650642393ac992553b8fdd98be7750e99660cc", // V5_0_0
   [Network.EthereumRinkeby]: "0x0857cc569a239c4e2f7abb5168408d92fb8d63ae", // V5_0_0
 };
@@ -13,7 +13,7 @@ export const AllRouters: ChainIdToAddressList = {
     "0x5aa9ca240174a54af6d9bfc69214b2ed948de86d", // V2_0_0
     "0x7c9733b19e14f37aca367fbd78922c098c55c874", // V3_0_0
     "0x8005488ff4f8982d2d8c1d602e6d747b1428dd41", // V4_0_0
-    "0x552b16d19dbad7af2786fe5a40d96d2a5c09428c", // V5_0_0
+    "0x114e54a100a0415abf9727234c92c83dbcc59abf", // V5_0_0
   ],
   [Network.EthereumGoerli]: [
     "0x4e650642393ac992553b8fdd98be7750e99660cc", // V5_0_0

@@ -10,6 +10,7 @@ import * as Rarible from "./rarible";
 import * as Seaport from "./seaport";
 import * as Sudoswap from "./sudoswap";
 import * as Blur from "./blur";
+import * as BlurSwap from "./blurswap";
 import * as SuperRare from "./superrare";
 import * as Universe from "./universe";
 import * as WyvernV2 from "./wyvern-v2";
@@ -33,6 +34,7 @@ export {
   Seaport,
   Sudoswap,
   Blur,
+  BlurSwap,
   SuperRare,
   Universe,
   WyvernV2,

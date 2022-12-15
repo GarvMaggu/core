@@ -1,57 +1,6 @@
 [
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "wethAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "looksRareAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "wyvernV23Address",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "zeroExV4Address",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "foundationAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "x2y2Address",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "x2y2ERC721DelegateAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "seaportAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "sudoSwapAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "blurAddress",
-        "type": "address"
-      }
-    ],
+    "inputs": [],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -223,6 +172,19 @@
   },
   {
     "inputs": [],
+    "name": "blurswap",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "foundation",
     "outputs": [
       {
@@ -372,6 +334,19 @@
   {
     "inputs": [],
     "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "rarible",
     "outputs": [
       {
         "internalType": "address",

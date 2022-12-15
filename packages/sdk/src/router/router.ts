@@ -213,10 +213,24 @@ export class Router {
 
     // Rest of orders are individually filled
     for (const detail of details) {
-      const { tx, exchangeKind, maker, isEscrowed } =
+      const { tx, exchangeKind, maker, isEscrowed, makeCalls } =
         await this.generateNativeListingFillTx(detail, taker);
 
-      if (detail.contractKind === "erc721") {
+      if (makeCalls) {
+        routerTxs.push({
+          from: taker,
+          to: this.contract.address,
+          data: this.contract.interface.encodeFunctionData("makeCalls", [
+            [makeCalls.target],
+            [makeCalls.data],
+            [makeCalls.value],
+          ]),
+          value: bn(tx.value!)
+            // Add the referrer fee
+            .add(bn(tx.value!).mul(fee.bps).div(10000))
+            .toHexString(),
+        });
+      } else if (detail.contractKind === "erc721") {
         routerTxs.push({
           from: taker,
           to: this.contract.address,
@@ -363,10 +377,13 @@ export class Router {
               taker,
               this.contract.address,
               detail.tokenId,
-              this.contract.interface.encodeFunctionData(
-                "singERC721BidFill",
-                [tx.data, exchangeKind, detail.contract, taker, true]
-              ),
+              this.contract.interface.encodeFunctionData("singERC721BidFill", [
+                tx.data,
+                exchangeKind,
+                detail.contract,
+                taker,
+                true,
+              ]),
             ]
           ) + generateReferrerBytes(options?.referrer),
       };
@@ -383,10 +400,13 @@ export class Router {
               detail.tokenId,
               // TODO: Support selling a quantity greater than 1
               1,
-              this.contract.interface.encodeFunctionData(
-                "singERC1155BidFill",
-                [tx.data, exchangeKind, detail.contract, taker, true]
-              ),
+              this.contract.interface.encodeFunctionData("singERC1155BidFill", [
+                tx.data,
+                exchangeKind,
+                detail.contract,
+                taker,
+                true,
+              ]),
             ]
           ) + generateReferrerBytes(options?.referrer),
       };
@@ -411,6 +431,7 @@ export class Router {
     exchangeKind: ExchangeKind;
     maker: string;
     isEscrowed?: boolean;
+    makeCalls?: any;
   }> {
     // In all below cases we set the router contract as the taker
     // since forwarding any received token to the actual taker of
@@ -502,6 +523,24 @@ export class Router {
         ),
         exchangeKind: ExchangeKind.BLUR,
         maker: order.params.maker,
+      };
+    } else if (kind === "blurswap") {
+      order = order as Sdk.BlurSwap.Order;
+      const exchange = new Sdk.BlurSwap.Exchange(this.chainId);
+      const tx = exchange.fillOrderTx(
+        this.contract.address,
+        order.params.inputData,
+        order.params.price
+      );
+      return {
+        tx: tx,
+        exchangeKind: ExchangeKind.BLURSWAP,
+        maker: order.params.maker,
+        // makeCalls: {
+        //   target: exchange.contract,
+        //   data: tx.data,
+        //   value: tx.value,
+        // },
       };
     }
 
