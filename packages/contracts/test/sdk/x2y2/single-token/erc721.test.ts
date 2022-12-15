@@ -57,7 +57,7 @@ describe("X2Y2 - SingleToken Erc721", () => {
     const sellerBalanceBefore = await ethers.provider.getBalance(
       order.params.maker
     );
-    const ownerBefore = await nft.getOwner(order.params.nft.tokenId);
+    const ownerBefore = await nft.getOwner(order.params.nft.tokenId!);
 
     expect(lc(ownerBefore)).to.eq(lc(order.params.maker));
 
@@ -65,13 +65,13 @@ describe("X2Y2 - SingleToken Erc721", () => {
       chainId,
       String(process.env.X2Y2_API_KEY)
     );
-    await exchange.fillOrder(alice, order, { referrer: "reservoir.market" });
+    await exchange.fillOrder(alice, order, { source: "reservoir.market" });
 
     const buyerBalanceAfter = await ethers.provider.getBalance(alice.address);
     const sellerBalanceAfter = await ethers.provider.getBalance(
       order.params.maker
     );
-    const ownerAfter = await nft.getOwner(order.params.nft.tokenId);
+    const ownerAfter = await nft.getOwner(order.params.nft.tokenId!);
 
     expect(buyerBalanceAfter).to.be.lt(
       buyerBalanceBefore.sub(order.params.price)

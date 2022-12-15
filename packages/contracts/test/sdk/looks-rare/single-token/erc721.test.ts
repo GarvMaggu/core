@@ -65,6 +65,7 @@ describe("LooksRare - SingleToken Erc721", () => {
       signer: buyer.address,
       collection: erc721.address,
       tokenId: boughtTokenId,
+      currency: Common.Addresses.Weth[chainId],
       price,
       startTime: await getCurrentTimestamp(ethers.provider),
       endTime: (await getCurrentTimestamp(ethers.provider)) + 60,
@@ -95,7 +96,7 @@ describe("LooksRare - SingleToken Erc721", () => {
     const ownerAfter = await nft.getOwner(boughtTokenId);
 
     expect(buyerBalanceAfter).to.eq(0);
-    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(200).div(10000)));
+    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(150).div(10000)));
     expect(ownerAfter).to.eq(buyer.address);
   });
 
@@ -128,6 +129,8 @@ describe("LooksRare - SingleToken Erc721", () => {
       signer: seller.address,
       collection: erc721.address,
       tokenId: soldTokenId,
+      // LooksRare sell orders are in WETH
+      currency: Common.Addresses.Weth[chainId],
       price,
       startTime: await getCurrentTimestamp(ethers.provider),
       endTime: (await getCurrentTimestamp(ethers.provider)) + 60,
@@ -151,7 +154,7 @@ describe("LooksRare - SingleToken Erc721", () => {
 
     // Match orders
     await exchange.fillOrder(buyer, sellOrder, buyOrder, {
-      referrer: "reservoir.market",
+      source: "reservoir.market",
     });
 
     const buyerBalanceAfter = await ethers.provider.getBalance(buyer.address);
@@ -159,7 +162,7 @@ describe("LooksRare - SingleToken Erc721", () => {
     const ownerAfter = await nft.getOwner(soldTokenId);
 
     expect(buyerBalanceAfter).to.be.lt(buyerBalanceBefore.sub(price));
-    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(200).div(10000)));
+    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(150).div(10000)));
     expect(ownerAfter).to.eq(buyer.address);
   });
 });

@@ -64,6 +64,7 @@ describe("LooksRare - ContractWide Erc721", () => {
       isOrderAsk: false,
       signer: buyer.address,
       collection: erc721.address,
+      currency: Common.Addresses.Weth[chainId],
       price,
       startTime: await getCurrentTimestamp(ethers.provider),
       endTime: (await getCurrentTimestamp(ethers.provider)) + 60,
@@ -96,7 +97,7 @@ describe("LooksRare - ContractWide Erc721", () => {
     const ownerAfter = await nft.getOwner(boughtTokenId);
 
     expect(buyerBalanceAfter).to.eq(0);
-    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(200).div(10000)));
+    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(150).div(10000)));
     expect(ownerAfter).to.eq(buyer.address);
   });
 });

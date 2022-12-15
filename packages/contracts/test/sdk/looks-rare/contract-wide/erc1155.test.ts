@@ -64,6 +64,7 @@ describe("LooksRare - ContractWide Erc1155", () => {
       isOrderAsk: false,
       signer: buyer.address,
       collection: erc1155.address,
+      currency: Common.Addresses.Weth[chainId],
       price,
       startTime: await getCurrentTimestamp(ethers.provider),
       endTime: (await getCurrentTimestamp(ethers.provider)) + 60,
@@ -102,7 +103,7 @@ describe("LooksRare - ContractWide Erc1155", () => {
     );
 
     expect(buyerBalanceAfter).to.eq(0);
-    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(200).div(10000)));
+    expect(sellerBalanceAfter).to.eq(price.sub(price.mul(150).div(10000)));
     expect(ownerBalanceAfter).to.eq(0);
   });
 });

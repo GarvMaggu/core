@@ -31,8 +31,8 @@ cache
 # Tenderly
 tenderly.yaml
 
-# Test files
-test.ts
+# Script files
+test*.ts
 
 # OpenZeppelin
 unknown-*

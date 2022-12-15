@@ -112,3 +112,10 @@ export type CriteriaResolver = {
   identifier: string;
   criteriaProof: string[];
 };
+
+export type PartialOrder = {
+  id: string;
+  contract: string;
+  tokenId: string;
+  unitPrice?: string;
+};

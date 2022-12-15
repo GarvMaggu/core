@@ -1,3 +1,4 @@
+import { Interface } from "@ethersproject/abi";
 import { Provider } from "@ethersproject/abstract-provider";
 import { TypedDataSigner } from "@ethersproject/abstract-signer";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
@@ -33,6 +34,9 @@ export class Order {
     if (!params.kind) {
       this.params.kind = this.detectKind();
     }
+
+    // Fix signature
+    this.fixSignature();
   }
 
   public hash() {
@@ -65,20 +69,54 @@ export class Order {
     };
   }
 
-  public checkSignature() {
-    const signer = verifyTypedData(
-      EIP712_DOMAIN(this.chainId),
-      ORDER_EIP712_TYPES,
-      this.params,
-      this.params.signature!
-    );
+  public async checkSignature(provider?: Provider) {
+    try {
+      const signer = verifyTypedData(
+        EIP712_DOMAIN(this.chainId),
+        ORDER_EIP712_TYPES,
+        this.params,
+        this.params.signature!
+      );
 
-    if (lc(this.params.offerer) !== lc(signer)) {
-      throw new Error("Invalid signature");
+      if (lc(this.params.offerer) !== lc(signer)) {
+        throw new Error("Invalid signature");
+      }
+    } catch {
+      if (!provider) {
+        throw new Error("Invalid signature");
+      }
+
+      const eip712Hash = _TypedDataEncoder.hash(
+        EIP712_DOMAIN(this.chainId),
+        ORDER_EIP712_TYPES,
+        this.params
+      );
+
+      const iface = new Interface([
+        "function isValidSignature(bytes32 digest, bytes signature) view returns (bytes4)",
+      ]);
+
+      const result = await new Contract(
+        this.params.offerer,
+        iface,
+        provider
+      ).isValidSignature(eip712Hash, this.params.signature!);
+      if (result !== iface.getSighash("isValidSignature")) {
+        throw new Error("Invalid signature");
+      }
     }
   }
 
   public checkValidity() {
+    const info = this.getInfo();
+    if (!info) {
+      throw new Error("Could not extract order info");
+    }
+
+    if (!bn(info.price).div(info.amount).mul(info.amount).eq(info.price)) {
+      throw new Error("Price not evenly divisible to the amount");
+    }
+
     if (!this.getBuilder().isValid(this)) {
       throw new Error("Invalid order");
     }
@@ -116,6 +154,10 @@ export class Order {
                 .div(bn(this.params.endTime).sub(this.params.startTime))
             )
           );
+          // Ensure we don't return any negative prices
+          if (price.lt(c.endAmount)) {
+            price = bn(c.endAmount);
+          }
         }
         return price;
       }
@@ -277,6 +319,23 @@ export class Order {
     throw new Error(
       "Could not detect order kind (order might have unsupported params/calldata)"
     );
+  }
+
+  private fixSignature() {
+    // Ensure `v` is always 27 or 28 (Seaport will revert otherwise)
+    if (this.params.signature?.length === 132) {
+      let lastByte = parseInt(this.params.signature.slice(-2), 16);
+      if (lastByte < 27) {
+        if (lastByte === 0 || lastByte === 1) {
+          lastByte += 27;
+        } else {
+          throw new Error("Invalid `v` byte");
+        }
+
+        this.params.signature =
+          this.params.signature.slice(0, -2) + lastByte.toString(16);
+      }
+    }
   }
 }
 
