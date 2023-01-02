@@ -7,6 +7,10 @@ export const Router: ChainIdToAddress = {
   [Network.Optimism]: "0xc0f489a34672d5b960a19279d99d77e94221d0c9", // V6_0_0
 };
 
+export const AlphaSharksSweep: ChainIdToAddress = {
+  [Network.Ethereum]: "0x114e54a100a0415abf9727234c92c83dbcc59abf", // V6_0_0
+};
+
 // Utility modules
 
 export const BalanceAssertModule: ChainIdToAddress = {};
@@ -19,6 +23,10 @@ export const WETHModule: ChainIdToAddress = {
 // Exchange modules
 
 export const BlurModule: ChainIdToAddress = {
+  [Network.Ethereum]: "0xb1096516fc33bb64a77158b10f155846e74bd7fa",
+};
+
+export const BlurSwapModule: ChainIdToAddress = {
   [Network.Ethereum]: "0xb1096516fc33bb64a77158b10f155846e74bd7fa",
 };
 

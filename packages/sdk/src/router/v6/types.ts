@@ -47,6 +47,10 @@ export type GenericOrder =
       order: Sdk.Sudoswap.Order;
     }
   | {
+      kind: "sudoswap2";
+      order: Sdk.Sudoswap2.Order;
+    }
+  | {
       kind: "zora";
       order: Sdk.Zora.Order;
     }
@@ -73,6 +77,10 @@ export type GenericOrder =
   | {
       kind: "blur";
       order: Sdk.Blur.Order;
+    }
+  | {
+      kind: "blurswap";
+      order: Sdk.BlurSwap.Order;
     }
   | {
       kind: "manifold";

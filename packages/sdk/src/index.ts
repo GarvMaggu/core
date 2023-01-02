@@ -1,5 +1,6 @@
 import * as Common from "./common";
 import * as Blur from "./blur";
+import * as BlurSwap from "./blurswap";
 import * as CryptoPunks from "./cryptopunks";
 import * as Element from "./element";
 import * as Forward from "./forward";
@@ -12,6 +13,7 @@ import * as Quixotic from "./quixotic";
 import * as Rarible from "./rarible";
 import * as Seaport from "./seaport";
 import * as Sudoswap from "./sudoswap";
+import * as Sudoswap2 from "./sudoswap2";
 import * as SuperRare from "./superrare";
 import * as Universe from "./universe";
 import * as WyvernV2 from "./wyvern-v2";
@@ -32,6 +34,7 @@ import * as RouterV6 from "./router/v6";
 export {
   Common,
   Blur,
+  BlurSwap,
   CryptoPunks,
   Element,
   Forward,
@@ -44,6 +47,7 @@ export {
   Rarible,
   Seaport,
   Sudoswap,
+  Sudoswap2,
   SuperRare,
   Universe,
   WyvernV2,

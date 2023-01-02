@@ -23,6 +23,7 @@ import ERC1155Abi from "../../common/abis/Erc1155.json";
 // Router
 import RouterAbi from "./abis/ReservoirV6_0_0.json";
 // Modules
+import AlphaSharksSweepAbi from "./abis/AlphaSharksSweep.json";
 import BlurModuleAbi from "./abis/BlurModule.json";
 import FoundationModuleAbi from "./abis/FoundationModule.json";
 import LooksRareModuleAbi from "./abis/LooksRareModule.json";
@@ -56,6 +57,11 @@ export class Router {
       // Initialize router
       router: new Contract(Addresses.Router[chainId], RouterAbi, provider),
       // Initialize modules
+      alphasharksSweepModule: new Contract(
+        Addresses.AlphaSharksSweep[chainId] ?? AddressZero,
+        AlphaSharksSweepAbi,
+        provider
+      ),
       blurModule: new Contract(
         Addresses.BlurModule[chainId] ?? AddressZero,
         BlurModuleAbi,
@@ -363,10 +369,12 @@ export class Router {
 
     // Split all listings by their kind
     const blurDetails: ListingDetailsExtracted[] = [];
+    const blurswapDetails: ListingDetailsExtracted[] = [];
     const foundationDetails: ListingDetailsExtracted[] = [];
     const looksRareDetails: ListingDetailsExtracted[] = [];
     const seaportDetails: PerCurrencyDetails = {};
     const sudoswapDetails: ListingDetailsExtracted[] = [];
+    const sudoswap2Details: ListingDetailsExtracted[] = [];
     const x2y2Details: ListingDetailsExtracted[] = [];
     const zeroexV4Erc721Details: ListingDetailsExtracted[] = [];
     const zeroexV4Erc1155Details: ListingDetailsExtracted[] = [];
@@ -381,6 +389,10 @@ export class Router {
       switch (kind) {
         case "blur":
           detailsRef = blurDetails;
+          break;
+
+        case "blurswap":
+          detailsRef = blurswapDetails;
           break;
 
         case "foundation":
@@ -400,6 +412,10 @@ export class Router {
 
         case "sudoswap":
           detailsRef = sudoswapDetails;
+          break;
+
+        case "sudoswap2":
+          detailsRef = sudoswap2Details;
           break;
 
         case "x2y2":
@@ -742,6 +758,57 @@ export class Router {
       }
     }
 
+    // Handle Sudoswap listings
+    if (sudoswap2Details.length) {
+      const orders = sudoswap2Details.map((d) => d.order as Sdk.Sudoswap2.Order);
+      const module = this.contracts.alphasharksSweepModule.address;
+
+      const fees = getFees(sudoswap2Details);
+
+      const totalPrice = orders
+        .map((order) => bn(order.params.price))
+        .reduce((a, b) => a.add(b), bn(0));
+
+      const totalFees = fees
+        .map(({ amount }) => bn(amount))
+        .reduce((a, b) => a.add(b), bn(0));
+
+      const exchange = new Sdk.Sudoswap2.Exchange(this.chainId);
+
+      const routerTxs = sudoswap2Details.map((e) => {
+        const order = e.order as Sdk.Sudoswap2.Order;
+        const orderData = JSON.parse(order.params.pair);
+        const tx =  exchange.fillOrderTx(taker, orderData.swaplist, order.params.price);
+        return {
+          from: taker,
+          to: this.contracts.alphasharksSweepModule.address,
+          data: this.contracts.alphasharksSweepModule.interface.encodeFunctionData(
+            "singERC721ListingFill",
+            [tx.data, 6, e.contract, e.tokenId, taker, AddressZero, 0]
+          ),
+          value: tx.value?.toString(),
+        };
+      });
+
+      executions.push({
+        module,
+        data: this.contracts.alphasharksSweepModule.interface.encodeFunctionData(
+          "batchBuyWithETH",
+          [
+            routerTxs.map((tx) => tx.data),
+            routerTxs.map((tx) => tx.value!.toString()),
+            !options?.partial,
+          ]
+        ),
+        value: totalPrice.add(totalFees),
+      });
+
+      // Mark the listings as successfully handled
+      for (const { originalIndex } of blurDetails) {
+        success[originalIndex] = true;
+      }
+    }
+
     // Handle X2Y2 listings
     if (x2y2Details.length) {
       const orders = x2y2Details.map((d) => d.order as Sdk.X2Y2.Order);
@@ -1064,6 +1131,7 @@ export class Router {
                 [
                   orders[0].getRaw(),
                   orders[0].buildMatching({
+                    blockNumber: orders[0].params.blockNumber,
                     trader: module,
                   }),
                   {
@@ -1081,6 +1149,7 @@ export class Router {
                   orders.map((order) => order.getRaw()),
                   orders.map((order) =>
                     order.buildMatching({
+                      blockNumber: order.params.blockNumber,
                       trader: module,
                     })
                   ),
@@ -1093,6 +1162,60 @@ export class Router {
                   fees,
                 ]
               ),
+        value: totalPrice.add(totalFees),
+      });
+
+      // Mark the listings as successfully handled
+      for (const { originalIndex } of blurDetails) {
+        success[originalIndex] = true;
+      }
+    }
+
+    // Handle Blurswap listings
+    if (blurswapDetails.length) {
+      const orders = blurswapDetails.map((d) => d.order as Sdk.BlurSwap.Order);
+      const module = this.contracts.alphasharksSweepModule.address;
+
+      const fees = getFees(blurDetails);
+
+      const totalPrice = orders
+        .map((order) => bn(order.params.price))
+        .reduce((a, b) => a.add(b), bn(0));
+
+      const totalFees = fees
+        .map(({ amount }) => bn(amount))
+        .reduce((a, b) => a.add(b), bn(0));
+
+      const exchange = new Sdk.BlurSwap.Exchange(this.chainId);
+
+      const routerTxs = blurswapDetails.map((e) => {
+        const order = e.order as Sdk.BlurSwap.Order;
+        const tx = exchange.fillOrderTx(
+          module,
+          order.params.inputData,
+          order.params.price
+        );
+        return {
+          from: taker,
+          to: this.contracts.alphasharksSweepModule.address,
+          data: this.contracts.alphasharksSweepModule.interface.encodeFunctionData(
+            "singERC721ListingFill",
+            [tx.data, 8, e.contract, e.tokenId, taker, AddressZero, 0]
+          ),
+          value: tx.value?.toString(),
+        };
+      });
+
+      executions.push({
+        module,
+        data: this.contracts.alphasharksSweepModule.interface.encodeFunctionData(
+          "batchBuyWithETH",
+          [
+            routerTxs.map((tx) => tx.data),
+            routerTxs.map((tx) => tx.value!.toString()),
+            !options?.partial,
+          ]
+        ),
         value: totalPrice.add(totalFees),
       });
 
