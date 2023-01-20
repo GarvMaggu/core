@@ -95,6 +95,43 @@ export class Router {
       }
     }
 
+    if (
+      details.every(({ kind }) => kind === "x2y2") &&
+      details.length === 1 &&
+      // TODO: Look into using tips for fees on top (only doable on Seaport)
+      (!options?.fee || Number(options.fee.bps) === 0) &&
+      // Skip direct filling if disabled via the options
+      !options?.forceRouter
+    ) {
+      const order = details[0].order as Sdk.X2Y2.Order;
+      // X2Y2 requires an API key to fill
+      const exchange = new Sdk.X2Y2.Exchange(
+        this.chainId,
+        // TODO: The SDK should not rely on environment variables
+        String(process.env.X2Y2_API_KEY)
+      );
+      const tx = await exchange.fillOrderTx(taker, order);
+      return tx;
+    }
+
+    if (
+      details.every(({ kind }) => kind === "looks-rare") &&
+      details.length === 1 &&
+      // TODO: Look into using tips for fees on top (only doable on Seaport)
+      (!options?.fee || Number(options.fee.bps) === 0) &&
+      // Skip direct filling if disabled via the options
+      !options?.forceRouter
+    ) {
+      const order = details[0].order as Sdk.LooksRare.Order;
+      const matchParams = order.buildMatching(taker, {
+        tokenId: details[0].tokenId,
+      });
+
+      const exchange = new Sdk.LooksRare.Exchange(this.chainId);
+      const tx = exchange.fillOrderTx(taker, order, matchParams);
+      return tx;
+    }
+
     // TODO: Refactor with the new modular router
     if (details.length === 1 && details[0].kind === "cryptopunks") {
       const exchange = new Sdk.CryptoPunks.Exchange(this.chainId);
