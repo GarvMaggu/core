@@ -143,6 +143,7 @@ describe("[ReservoirV6_0_0] Element offers", () => {
       nft: offer.nft,
       zone: seaportApprovalOrderZone.address,
     }));
+    
     await setupSeaportERC721Approvals(approvals);
     
     // Prepare executions

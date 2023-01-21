@@ -81,6 +81,7 @@ export class Router {
         const exchange = new Sdk.Universe.Exchange(this.chainId);
         return exchange.fillOrderTx(taker, order, {
           amount: Number(details[0].amount),
+          source: options?.source,
         });
       }
     }
@@ -95,6 +96,7 @@ export class Router {
           tokenId: details[0].tokenId,
           assetClass: details[0].contractKind.toUpperCase(),
           amount: Number(details[0].amount),
+          source: options?.source,
         });
       }
     }
@@ -108,7 +110,7 @@ export class Router {
         .map(async (detail) => {
           const order = detail.order as Sdk.Seaport.Types.PartialOrder;
           const result = await axios.get(
-            `https://order-fetcher.vercel.app/api/listing?orderHash=${order.id}&contract=${order.contract}&tokenId=${order.tokenId}&taker=${taker}`
+            `https://order-fetcher.vercel.app/api/listing?orderHash=${order.id}&contract=${order.contract}&tokenId=${order.tokenId}&taker=${taker}&chainId=${this.chainId}`
           );
 
           const fullOrder = new Sdk.Seaport.Order(
@@ -580,9 +582,14 @@ export class Router {
 
       const exchange = new Sdk.Seaport.Exchange(this.chainId);
       return {
-        tx: exchange.fillOrderTx(this.contract.address, order, matchParams, {
-          recipient: taker,
-        }),
+        tx: await exchange.fillOrderTx(
+          this.contract.address,
+          order,
+          matchParams,
+          {
+            recipient: taker,
+          }
+        ),
         exchangeKind: ExchangeKind.SEAPORT,
         maker: order.params.offerer,
       };
@@ -683,7 +690,7 @@ export class Router {
 
       const exchange = new Sdk.Seaport.Exchange(this.chainId);
       return {
-        tx: exchange.fillOrderTx(
+        tx: await exchange.fillOrderTx(
           filler,
           order,
           matchParams,
@@ -697,14 +704,14 @@ export class Router {
     } else if (kind === "seaport-partial") {
       order = order as Sdk.Seaport.Types.PartialOrder;
       const result = await axios.get(
-        `https://order-fetcher.vercel.app/api/offer?orderHash=${order.id}&contract=${order.contract}&tokenId=${order.tokenId}&taker=${taker}`
+        `https://order-fetcher.vercel.app/api/offer?orderHash=${order.id}&contract=${order.contract}&tokenId=${order.tokenId}&taker=${taker}&chainId=${this.chainId}`
       );
 
       const fullOrder = new Sdk.Seaport.Order(this.chainId, result.data.order);
 
       const exchange = new Sdk.Seaport.Exchange(this.chainId);
       return {
-        tx: exchange.fillOrderTx(
+        tx: await exchange.fillOrderTx(
           filler,
           fullOrder,
           {
