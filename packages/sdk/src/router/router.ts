@@ -6,7 +6,7 @@ import { Contract } from "@ethersproject/contracts";
 import * as Addresses from "./addresses";
 import { ExchangeKind, BidDetails, ListingDetails } from "./types";
 import * as Sdk from "../index";
-import { TxData, bn, generateReferrerBytes } from "../utils";
+import { TxData, bn, generateReferrerBytes, Network } from "../utils";
 
 import Erc721Abi from "../common/abis/Erc721.json";
 import Erc1155Abi from "../common/abis/Erc1155.json";
@@ -62,12 +62,17 @@ export class Router {
     // filling ERC721 vs ERC1155).
     if (
       details.every(({ kind }) => kind === "seaport") &&
+      (details.every(({ chainId }) => chainId === Network.Magically) ||
+        details.every(({ chainId }) => chainId === Network.Ethereum) ||
+        details.every(({ chainId }) => chainId == undefined)) &&
       // TODO: Look into using tips for fees on top (only doable on Seaport)
       (!options?.fee || Number(options.fee.bps) === 0) &&
       // Skip direct filling if disabled via the options
       !options?.forceRouter
     ) {
-      const exchange = new Sdk.Seaport.Exchange(this.chainId);
+      const exchange = new Sdk.Seaport.Exchange(
+        details[0].chainId || this.chainId
+      );
       if (details.length === 1) {
         const order = details[0].order as Sdk.Seaport.Order;
         return exchange.fillOrderTx(
@@ -461,7 +466,7 @@ export class Router {
   }
 
   private async generateNativeListingFillTx(
-    { kind, order, tokenId, amount }: ListingDetails,
+    { kind, order, tokenId, amount, chainId: cid }: ListingDetails,
     taker: string
   ): Promise<{
     tx: TxData;
@@ -531,12 +536,15 @@ export class Router {
       // Support passing an amount for partially fillable orders
       const matchParams = order.buildMatching({ amount });
 
-      const exchange = new Sdk.Seaport.Exchange(this.chainId);
+      const exchange = new Sdk.Seaport.Exchange(cid || this.chainId);
       return {
         tx: exchange.fillOrderTx(this.contract.address, order, matchParams, {
           recipient: taker,
         }),
-        exchangeKind: ExchangeKind.SEAPORT,
+        exchangeKind:
+          cid == Network.Magically
+            ? ExchangeKind.SEAPORTV1_4
+            : ExchangeKind.SEAPORT,
         maker: order.params.offerer,
       };
     } else if (kind === "sudoswap") {

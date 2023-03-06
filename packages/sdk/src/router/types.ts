@@ -9,7 +9,8 @@ export enum ExchangeKind {
   SEAPORT,
   SUDOSWAP,
   BLUR,
-  BLURSWAP
+  BLURSWAP,
+  SEAPORTV1_4,
 }
 
 export type GenericOrder =
@@ -57,6 +58,7 @@ export type ListingFillDetails = {
   currency: string;
   // Relevant for partially-fillable orders
   amount?: number | string;
+  chainId?: number;
 };
 
 export type BidFillDetails = {

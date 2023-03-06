@@ -4,6 +4,7 @@ import { ChainIdToAddress, ChainIdToAddressMap, Network } from "../utils";
 
 export const Eth: ChainIdToAddress = {
   [Network.Ethereum]: AddressZero,
+  [Network.Magically]: AddressZero,
   [Network.EthereumRinkeby]: AddressZero,
   [Network.EthereumGoerli]: AddressZero,
   [Network.Optimism]: AddressZero,
@@ -19,6 +20,7 @@ export const Eth: ChainIdToAddress = {
 
 export const Weth: ChainIdToAddress = {
   [Network.Ethereum]: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  [Network.Magically]: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   [Network.EthereumRinkeby]: "0xc778417e063141139fce010982780140aa0cd5ab",
   [Network.EthereumGoerli]: "0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6",
   [Network.EthereumKovan]: "0xd0a1e359811322d97991e03f863a0c30c2cf029c",
@@ -37,12 +39,49 @@ export const Weth: ChainIdToAddress = {
 // TODO: Include addresses across all supported chains
 export const Usdc: ChainIdToAddress = {
   [Network.Ethereum]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  [Network.Magically]: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   [Network.EthereumKovan]: "0xb7a4f3e9097c08da09517b5ab877f7a917224ede",
   [Network.Optimism]: "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
 };
 
 export const Routers: ChainIdToAddressMap = {
   [Network.Ethereum]: {
+    // Blur
+    "0x39da41747a83aee658334415666f3ef92dd0d541": "blur.io",
+    // Element
+    "0x69cf8871f61fb03f540bc519dd1f1d4682ea0bf6": "element.market",
+    // Gem
+    "0x0000000031f7382a812c64b604da4fc520afef4b": "gem.xyz",
+    "0xf24629fbb477e10f2cf331c2b7452d8596b5c7a5": "gem.xyz",
+    "0x83c8f28c26bf6aaca652df1dbbe0e1b56f8baba2": "gem.xyz",
+    "0x0000000035634b55f3d99b071b5a354f48e10bef": "gem.xyz",
+    "0x00000000a50bb64b4bbeceb18715748dface08af": "gem.xyz",
+    "0xae9c73fd0fd237c1c6f66fe009d24ce969e98704": "gem.xyz",
+    // Genie
+    "0x0a267cf51ef038fc00e71801f5a524aec06e4f07": "genie.xyz",
+    "0x2af4b707e1dce8fc345f38cfeeaa2421e54976d5": "genie.xyz",
+    "0xcdface5643b90ca4b3160dd2b5de80c1bf1cb088": "genie.xyz",
+    "0x31837aaf36961274a04b915697fdfca1af31a0c7": "genie.xyz",
+    "0xf97e9727d8e7db7aa8f006d1742d107cf9411412": "genie.xyz",
+    // NFTInit
+    "0x7f6cdf5869bd780ea351df4d841f68d73cbcc16b": "nftinit.com",
+    // OKX
+    "0x92701d42e1504ef9fce6d66a2054218b048dda43": "okx.com",
+    // Rarible
+    "0x2a7251d1e7d708c507b1b0d3ff328007beecce5d": "rarible.com",
+    // Rarity Garden
+    "0x603d022611bfe6a101dcdab207d96c527f1d4d8e": "rarity.garden",
+    "0x39b6862c4783db2651d64bc160349dc9a15f1fb7": "rarity.garden",
+    // Reservoir
+    "0xc52b521b284792498c1036d4c2ed4b73387b3859": "reservoir.tools",
+    "0x5aa9ca240174a54af6d9bfc69214b2ed948de86d": "reservoir.tools",
+    "0x7c9733b19e14f37aca367fbd78922c098c55c874": "reservoir.tools",
+    "0x8005488ff4f8982d2d8c1d602e6d747b1428dd41": "reservoir.tools",
+    "0x141efc30c4093bc0f8204accb8afa6643fddecf2": "reservoir.tools",
+    // X2Y2
+    "0x56dd5bbede9bfdb10a2845c4d70d4a2950163044": "x2y2.io",
+  },
+  [Network.Magically]: {
     // Blur
     "0x39da41747a83aee658334415666f3ef92dd0d541": "blur.io",
     // Element
@@ -94,6 +133,7 @@ export const Routers: ChainIdToAddressMap = {
 
 export const RoyaltyRegistry: ChainIdToAddress = {
   [Network.Ethereum]: "0xad2184fb5dbcfc05d8f056542fb25b04fa32a95d",
+  [Network.Magically]: "0xad2184fb5dbcfc05d8f056542fb25b04fa32a95d",
   [Network.EthereumGoerli]: "0x644611f32769aaecceadec6462c9495b23b40520",
   [Network.Polygon]: "0xe7c9cb6d966f76f3b5142167088927bf34966a1f",
 };
