@@ -11,7 +11,7 @@ import { Builders } from "./builders";
 import { BaseBundleBuilder, BaseBundleOrderInfo } from "./builders/base/bundle";
 import * as Types from "./types";
 import * as Common from "../common";
-import { bn, lc, n, s } from "../utils";
+import { Network, bn, lc, n, s } from "../utils";
 
 import ConduitControllerAbi from "./abis/ConduitController.json";
 import ExchangeAbi from "./abis/Exchange.json";
@@ -240,7 +240,12 @@ export class BundleOrder {
 
 const EIP712_DOMAIN = (chainId: number) => ({
   name: "Seaport",
-  version: chainId == 1 ? "1.1" : "1.4",
+  version:
+    chainId == Network.Magically2
+      ? "1.5"
+      : chainId == Network.Magically
+      ? "1.4"
+      : "1.1",
   chainId: 1,
   verifyingContract: Addresses.Exchange[chainId],
 });

@@ -63,6 +63,7 @@ export class Router {
     if (
       details.every(({ kind }) => kind === "seaport") &&
       (details.every(({ chainId }) => chainId === Network.Magically) ||
+        details.every(({ chainId }) => chainId === Network.Magically2) ||
         details.every(({ chainId }) => chainId === Network.Ethereum) ||
         details.every(({ chainId }) => chainId == undefined)) &&
       // TODO: Look into using tips for fees on top (only doable on Seaport)
@@ -542,7 +543,9 @@ export class Router {
           recipient: taker,
         }),
         exchangeKind:
-          cid == Network.Magically
+          cid == Network.Magically2
+            ? ExchangeKind.SEAPORTV1_5
+            : cid == Network.Magically
             ? ExchangeKind.SEAPORTV1_4
             : ExchangeKind.SEAPORT,
         maker: order.params.offerer,

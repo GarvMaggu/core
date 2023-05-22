@@ -97,6 +97,7 @@ export enum Network {
   Avalanche = 43114,
   AvalancheFuji = 43113,
   Magically = 91863,
+  Magically2 = 91864,
 }
 
 export type ChainIdToAddress = { [chainId: number]: string };

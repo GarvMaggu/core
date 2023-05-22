@@ -11,6 +11,7 @@ export enum ExchangeKind {
   BLUR,
   BLURSWAP,
   SEAPORTV1_4,
+  SEAPORTV1_5
 }
 
 export type GenericOrder =
