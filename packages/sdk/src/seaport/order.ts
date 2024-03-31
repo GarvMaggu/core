@@ -303,7 +303,9 @@ export class Order {
 const EIP712_DOMAIN = (chainId: number) => ({
   name: "Seaport",
   version:
-    chainId == Network.Magically2
+    chainId == Network.Magically3
+      ? "1.6"
+      : chainId == Network.Magically2
       ? "1.5"
       : chainId == Network.Magically
       ? "1.4"

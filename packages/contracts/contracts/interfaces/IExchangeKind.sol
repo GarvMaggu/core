@@ -9,5 +9,6 @@ enum ExchangeKind {
     X2Y2,
     SEAPORT,
     SEAPORTV1_4,
-    SEAPORTV1_5
+    SEAPORTV1_5,
+    SEAPORTV1_6
 }
